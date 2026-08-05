@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 import OrderHeader from "./OrderHeader";
@@ -36,12 +37,17 @@ export default function OrderForm({
 
   const today =
     new Date().toISOString().split("T")[0];
+    const searchParams = useSearchParams();
+
+const defaultBranch =
+  searchParams.get("branch") || "";
 
   const [orderDate, setOrderDate] =
     useState(today);
 
   const [branch, setBranch] =
-    useState("");
+  useState(defaultBranch);
+    
 
   const [requestType, setRequestType] =
     useState("Components");
@@ -66,13 +72,17 @@ export default function OrderForm({
 
   useEffect(() => {
 
-    loadBranches();
+  loadBranches();
 
-    loadComponents();
+  loadComponents();
 
-    loadKitchenSupplies();
+  loadKitchenSupplies();
 
-  }, []);
+  if (defaultBranch) {
+    setBranch(defaultBranch);
+  }
+
+}, [defaultBranch]);
 
   useEffect(() => {
 
@@ -259,6 +269,21 @@ export default function OrderForm({
   );
 
   async function saveOrder() {
+    const now = new Date();
+
+const cutoff = new Date();
+
+cutoff.setHours(22, 0, 0, 0);
+
+if (now > cutoff) {
+
+  alert(
+    "Order submission is closed. Daily cutoff is 10:00 PM."
+  );
+
+  return;
+
+}
 
     if (!branch) {
       alert("Please select a branch");
