@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
 import Image from "next/image";
+import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 type Order = {
@@ -19,73 +19,62 @@ type OrderItem = {
 };
 
 export default function PrintOrderPage() {
-
   const params = useParams();
 
-  const [order, setOrder] =
-    useState<Order | null>(null);
+  const id = params.id as string;
 
-  const [items, setItems] =
-    useState<OrderItem[]>([]);
+  const [order, setOrder] = useState<Order | null>(null);
+
+  const [items, setItems] = useState<OrderItem[]>([]);
 
   useEffect(() => {
-
     loadOrder();
-
   }, []);
 
   async function loadOrder() {
+    const { data: orderData } = await supabase
+      .from("orders")
+      .select("*")
+      .eq("id", id)
+      .single();
 
-    const { data: orderData } =
-      await supabase
-        .from("orders")
-        .select("*")
-        .eq("id", params.id)
-        .single();
+    if (!orderData) return;
 
     setOrder(orderData);
 
-    const { data: itemData } =
-      await supabase
-        .from("order_items")
-        .select("*")
-        .eq("order_id", params.id);
+    const { data: itemData } = await supabase
+      .from("order_items")
+      .select("*")
+      .eq("order_id", id);
 
     setItems(itemData || []);
-
   }
 
-  if (!order) {
-
+  if (!order)
     return (
-      <div className="flex min-h-screen items-center justify-center text-2xl font-bold">
+      <div className="p-10 text-center">
         Loading...
       </div>
     );
 
-  }
-
-  const formattedDate =
-    new Date(order.order_date).toLocaleDateString(
-      "en-GB",
-      {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      }
-    );
+  const formattedDate = new Date(
+    order.order_date
+  ).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
 
   return (
+  <div className="mx-auto max-w-[190mm] bg-white px-4 py-4 text-black">
 
-    <div className="mx-auto bg-white px-8 py-8 text-black max-w-[190mm] min-h-screen">
+          {/* HEADER */}
 
-      {/* HEADER */}
-
-      <div className="relative border-b-[3px] border-green-700 pb-8">
+      <div className="border-b-2 border-green-700 pb-4">
 
         <button
           onClick={() => window.print()}
-          className="absolute right-0 top-0 rounded-xl bg-green-700 px-6 py-3 font-semibold text-white hover:bg-green-800 print:hidden"
+          className="absolute right-10 rounded-lg bg-green-700 px-5 py-1.5 text-white print:hidden"
         >
           Print
         </button>
@@ -95,21 +84,19 @@ export default function PrintOrderPage() {
           <Image
             src="/logo.png"
             alt="CALO"
-            width={280}
-            height={90}
-            className="mx-auto h-auto"
+            width={120}
+            height={40}
+            className="mx-auto"
             priority
           />
 
-          <h1 className="mt-4 text-4xl font-extrabold uppercase tracking-[0.2em] text-green-700">
-
+          <h1 className="mt-1 text-xl font-bold uppercase tracking-[0.15em] text-green-700">
             {order.request_type === "Components"
               ? "Component Request"
               : "Kitchen Supplies Request"}
-
           </h1>
 
-          <p className="mt-2 text-lg text-gray-500">
+          <p className="text-xs text-gray-500">
             On Demand Ordering
           </p>
 
@@ -117,80 +104,65 @@ export default function PrintOrderPage() {
 
       </div>
 
-            {/* ORDER INFORMATION */}
+      {/* ORDER INFO */}
 
-      <div className="mt-8 rounded-xl border border-gray-300 bg-gray-50 p-5">
+      <div className="mt-2 rounded border border-gray-300 bg-gray-50 px-3 py-2">
 
-        <h2 className="mb-4 border-b border-green-700 pb-2 text-lg font-bold uppercase text-green-700">
-          Order Information
-        </h2>
+  <div className="grid grid-cols-3 gap-4 text-xs">
 
-        <div className="grid grid-cols-3 gap-8">
-
-          <div>
-
-            <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
-              Date
-            </p>
-
-            <p className="mt-2 text-2xl font-bold">
-              {formattedDate}
-            </p>
-
-          </div>
-
-          <div>
-
-            <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
-              Branch
-            </p>
-
-            <p className="mt-2 text-2xl font-bold">
-              {order.branch}
-            </p>
-
-          </div>
-
-          <div>
-
-            <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
-              Request Type
-            </p>
-
-            <p className="mt-2 text-2xl font-bold">
-              {order.request_type}
-            </p>
-
-          </div>
-
-        </div>
-
+    <div>
+      <span className="font-semibold text-gray-500">
+        Date
+      </span>
+      <div className="font-bold text-sm">
+        {formattedDate}
       </div>
+    </div>
 
-      {/* ITEMS */}
+    <div>
+      <span className="font-semibold text-gray-500">
+        Branch
+      </span>
+      <div className="font-bold text-sm">
+        {order.branch}
+      </div>
+    </div>
 
-      <div className="mt-8 overflow-hidden rounded-xl border border-gray-300">
+    <div>
+      <span className="font-semibold text-gray-500">
+        Type
+      </span>
+      <div className="font-bold text-sm">
+        {order.request_type}
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+      {/* TABLE */}
+
+      <div className="mt-2 overflow-hidden rounded-lg border border-gray-300">
 
         <table className="w-full border-collapse">
 
           <thead>
 
-            <tr className="bg-green-700 text-white">
+            <tr className="bg-green-700 text-sm text-white">
 
-              <th className="w-[8%] border border-green-800 py-4 text-center">
-                #
-              </th>
+              <th className="border py-1.5 w-[8%]">#</th>
 
-              <th className="w-[62%] border border-green-800 px-5 py-4 text-left">
+              <th className="border px-3 py-1.5 text-left w-[62%]">
                 Description
               </th>
 
-              <th className="w-[15%] border border-green-800 py-4 text-center">
+              <th className="border py-1.5 w-[15%]">
                 Unit
               </th>
 
-              <th className="w-[15%] border border-green-800 py-4 text-center">
-                Quantity
+              <th className="border py-1.5 w-[15%]">
+                Qty
               </th>
 
             </tr>
@@ -210,19 +182,19 @@ export default function PrintOrderPage() {
                 }
               >
 
-                <td className="border py-5 text-center font-semibold">
+                <td className="border py-1.5 text-center">
                   {index + 1}
                 </td>
 
-                <td className="border px-5 py-5 font-medium">
+                <td className="border px-3 py-1.5">
                   {item.item_name}
                 </td>
 
-                <td className="border py-5 text-center">
+                <td className="border py-1.5 text-center">
                   {item.unit}
                 </td>
 
-                <td className="border py-5 text-center text-2xl font-bold">
+                <td className="border py-1.5 text-center font-bold">
                   {item.quantity}
                 </td>
 
@@ -238,16 +210,11 @@ export default function PrintOrderPage() {
 
             {/* FOOTER */}
 
-      <div className="mt-8 flex items-center justify-between border-t border-gray-300 pt-4 text-sm text-gray-600">
+      <div className="mt-2 flex items-center justify-between border-t border-gray-300 pt-2 text-xs text-gray-600">
 
         <div>
-          Printed:{" "}
-          {new Date().toLocaleDateString("en-GB", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-          })}{" "}
-          •{" "}
+          Printed{" "}
+          {new Date().toLocaleDateString("en-GB")}{" "}
           {new Date().toLocaleTimeString("en-GB", {
             hour: "2-digit",
             minute: "2-digit",
@@ -255,7 +222,7 @@ export default function PrintOrderPage() {
         </div>
 
         <div>
-          Page 1 of 1
+          Page 1
         </div>
 
       </div>
@@ -264,7 +231,7 @@ export default function PrintOrderPage() {
 
         @page {
           size: A4 portrait;
-          margin: 10mm;
+          margin: 8mm;
         }
 
         @media print {
@@ -283,25 +250,14 @@ export default function PrintOrderPage() {
           table {
             width: 100%;
             border-collapse: collapse;
-            page-break-inside: auto;
           }
 
           thead {
             display: table-header-group;
           }
 
-          tbody {
-            display: table-row-group;
-          }
-
           tr {
             page-break-inside: avoid;
-            page-break-after: auto;
-          }
-
-          td,
-          th {
-            border: 1px solid #cfcfcf;
           }
 
         }
