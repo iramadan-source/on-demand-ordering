@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 import OrderHeader from "./OrderHeader";
@@ -37,16 +36,13 @@ export default function OrderForm({
 
   const today =
     new Date().toISOString().split("T")[0];
-    const searchParams = useSearchParams();
-
-const defaultBranch =
-  searchParams.get("branch") || "";
+   
 
   const [orderDate, setOrderDate] =
     useState(today);
 
   const [branch, setBranch] =
-  useState(defaultBranch);
+  useState("");
     
 
   const [requestType, setRequestType] =
@@ -78,11 +74,7 @@ const defaultBranch =
 
   loadKitchenSupplies();
 
-  if (defaultBranch) {
-    setBranch(defaultBranch);
-  }
-
-}, [defaultBranch]);
+}, []);
 
   useEffect(() => {
 
