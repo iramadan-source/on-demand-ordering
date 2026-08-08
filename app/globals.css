@@ -24,3 +24,90 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* =========================
+   PRINT VERSION
+   ========================= */
+
+@media print {
+
+  /* Hide navigation and controls */
+  aside,
+  button,
+  input {
+    display: none !important;
+  }
+
+  /* Page */
+  body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Title */
+  h1 {
+    font-size: 28px !important;
+    margin-bottom: 4px !important;
+  }
+
+  /* KPI cards */
+  .mt-8.grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 10px !important;
+    margin-top: 15px !important;
+    margin-bottom: 15px !important;
+  }
+
+  .mt-8.grid > div {
+    padding: 12px !important;
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+  }
+
+  .mt-8.grid h2 {
+    font-size: 20px !important;
+    margin-top: 4px !important;
+  }
+
+  .mt-8.grid p {
+    font-size: 11px !important;
+  }
+
+  /* Hide the 3rd KPI card = Total Cost */
+  .mt-8.grid > div:nth-child(3) {
+    display: none !important;
+  }
+
+  /* Table */
+  table {
+    width: 100% !important;
+    font-size: 11px !important;
+  }
+
+  th,
+  td {
+    padding: 7px !important;
+  }
+
+
+
+  /* Keep rows together */
+  tr {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Remove shadows */
+  .shadow,
+  .shadow-sm,
+  .shadow-lg {
+    box-shadow: none !important;
+  }
+}

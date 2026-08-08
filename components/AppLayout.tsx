@@ -42,7 +42,7 @@ export default function AppLayout({
 
         </div>
 
-        <nav className="p-4 space-y-2">
+        <nav className="space-y-2 p-4">
 
           <Link
             href="/dashboard"
@@ -61,11 +61,8 @@ export default function AppLayout({
             className="flex w-full items-center justify-between rounded-xl px-4 py-3 hover:bg-slate-800"
           >
             <div className="flex items-center gap-3">
-
               <ShoppingCart size={20} />
-
               Orders
-
             </div>
 
             {ordersOpen ? (
@@ -73,7 +70,6 @@ export default function AppLayout({
             ) : (
               <ChevronRight size={18} />
             )}
-
           </button>
 
           {ordersOpen && (
@@ -102,6 +98,18 @@ export default function AppLayout({
               >
                 <History size={18} />
                 Order History
+              </Link>
+
+              <Link
+                href="/component-stats"
+                className={`flex items-center gap-2 rounded-lg px-3 py-2 ${
+                  pathname === "/component-stats"
+                    ? "bg-green-600"
+                    : "hover:bg-slate-800"
+                }`}
+              >
+                <BarChart3 size={18} />
+                Component Stats
               </Link>
 
             </div>
@@ -151,9 +159,7 @@ export default function AppLayout({
       {/* Main */}
 
       <main className="flex-1 p-8">
-
         {children}
-
       </main>
 
     </div>
