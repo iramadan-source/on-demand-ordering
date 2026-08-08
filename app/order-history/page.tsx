@@ -19,7 +19,9 @@ export default function OrderHistoryPage() {
 
   const [orders, setOrders] = useState<Order[]>([]);
 
-  const [selectedDate, setSelectedDate] = useState("All");
+  const today = new Date().toISOString().split("T")[0];
+
+const [selectedDate, setSelectedDate] = useState(today);
   const [selectedBranch, setSelectedBranch] = useState("All");
   const [selectedType, setSelectedType] = useState("All");
   const [search, setSearch] = useState("");
