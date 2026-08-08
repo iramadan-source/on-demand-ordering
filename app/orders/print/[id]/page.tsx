@@ -66,9 +66,9 @@ export default function PrintOrderPage() {
   });
 
   return (
-  <div className="mx-auto max-w-[190mm] bg-white px-4 py-4 text-black">
+  <div className="print-order-container w-full max-w-5xl mx-auto">
 
-          {/* HEADER */}
+    {/* HEADER */}
 
       <div className="border-b-2 border-green-700 pb-4">
 
@@ -230,9 +230,9 @@ export default function PrintOrderPage() {
       <style jsx global>{`
 
         @page {
-          size: A4 portrait;
-          margin: 8mm;
-        }
+  size: A4 portrait;
+  margin: 5mm;
+}
 
         @media print {
 
@@ -246,6 +246,11 @@ export default function PrintOrderPage() {
           button {
             display: none !important;
           }
+            .print-order-container {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+}
 
           table {
             width: 100%;
