@@ -177,6 +177,44 @@ export default function OrderHistoryPage() {
       {/* FILTERS */}
       <div className="mb-8 rounded-2xl bg-white p-6 shadow">
 
+        <div className="mb-4 flex flex-wrap gap-2">
+
+  <button
+    onClick={() => {
+      setSelectedDate(today);
+      setShowOrders(true);
+    }}
+    className="rounded-lg bg-green-700 px-4 py-2 font-semibold text-white hover:bg-green-800"
+  >
+    Today
+  </button>
+
+  <button
+    onClick={() => {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      setSelectedDate(
+        yesterday.toISOString().split("T")[0]
+      );
+      setShowOrders(true);
+    }}
+    className="rounded-lg bg-gray-100 px-4 py-2 font-semibold text-gray-700 hover:bg-gray-200"
+  >
+    Yesterday
+  </button>
+
+  <button
+    onClick={() => {
+      setSelectedDate("All");
+      setShowOrders(true);
+    }}
+    className="rounded-lg bg-gray-100 px-4 py-2 font-semibold text-gray-700 hover:bg-gray-200"
+  >
+    All Dates
+  </button>
+
+</div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
 
           <select
