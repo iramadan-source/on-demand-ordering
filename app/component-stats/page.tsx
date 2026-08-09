@@ -129,16 +129,28 @@ export default function ComponentStatsPage() {
   }
 
   function exportToExcel() {
-    const rows = stats.flatMap((item) =>
-      item.details.map((detail) => ({
-        Date: selectedDate,
-        Component: item.name,
-        Unit: item.unit,
-        Branch: detail.branch,
-        Quantity: detail.quantity,
-        "Total Component Qty": item.qty,
-      }))
-    );
+  const rows = stats.map((item) => ({
+    Date: selectedDate,
+    Component: item.name,
+    Unit: item.unit,
+    "Total Quantity": item.qty,
+  }));
+
+  const worksheet = XLSX.utils.json_to_sheet(rows);
+
+  const workbook = XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(
+    workbook,
+    worksheet,
+    "Component Stats"
+  );
+
+  XLSX.writeFile(
+    workbook,
+    `Component-Stats-${selectedDate}.xlsx`
+  );
+}
 
     const worksheet = XLSX.utils.json_to_sheet(rows);
 
