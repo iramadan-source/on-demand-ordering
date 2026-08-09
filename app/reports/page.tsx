@@ -7,6 +7,8 @@ import { branches } from "@/data/branches";
 import OrderReportTable from "@/components/reports/OrderReportTable";
 import BranchSummaryTable from "@/components/reports/BranchSummaryTable";
 import * as XLSX from "xlsx";
+import { DayPicker, DateRange } from "react-day-picker";
+import "react-day-picker/style.css";
 
 type Order = {
   id: string;
@@ -29,7 +31,12 @@ export default function ReportsPage() {
     .split("T")[0];
 
   const [selectedDate, setSelectedDate] =
-    useState(today);
+useState(today);
+
+const [reportMode, setReportMode] =
+useState<"Daily" | "Weekly" | "Monthly">("Daily");
+const [weeklyRange, setWeeklyRange] =
+useState<DateRange | undefined>();
 
   const [selectedBranch, setSelectedBranch] =
     useState("All");
@@ -100,39 +107,92 @@ export default function ReportsPage() {
 
 }
 
-  const filteredOrders =
-    useMemo(() => {
+  const filteredOrders = useMemo(() => {
 
-      return orders.filter((order) => {
+  let startDate = selectedDate;
+  let endDate = selectedDate;
 
-        if (
-          selectedDate &&
-          order.order_date !== selectedDate
-        )
-          return false;
+  if (reportMode === "Weekly") {
 
-        if (
-          selectedBranch !== "All" &&
-          order.branch !== selectedBranch
-        )
-          return false;
+  if (!weeklyRange?.from) {
+    return [];
+  }
 
-        if (
-          selectedType !== "All" &&
-          order.request_type !== selectedType
-        )
-          return false;
+  startDate =
+    weeklyRange.from
+      .toISOString()
+      .split("T")[0];
 
-        return true;
+  endDate =
+    weeklyRange.to
+      ? weeklyRange.to
+          .toISOString()
+          .split("T")[0]
+      : startDate;
 
-      });
+}
 
-    }, [
-      orders,
-      selectedDate,
-      selectedBranch,
-      selectedType,
-    ]);
+  if (reportMode === "Monthly") {
+
+    const selected = new Date(
+      `${selectedDate}T00:00:00`
+    );
+
+    const start = new Date(
+      selected.getFullYear(),
+      selected.getMonth(),
+      1
+    );
+
+    const end = new Date(
+      selected.getFullYear(),
+      selected.getMonth() + 1,
+      0
+    );
+
+    startDate = start
+      .toISOString()
+      .split("T")[0];
+
+    endDate = end
+      .toISOString()
+      .split("T")[0];
+  }
+
+  return orders.filter((order) => {
+
+    if (
+      order.order_date < startDate ||
+      order.order_date > endDate
+    ) {
+      return false;
+    }
+
+    if (
+      selectedBranch !== "All" &&
+      order.branch !== selectedBranch
+    ) {
+      return false;
+    }
+
+    if (
+      selectedType !== "All" &&
+      order.request_type !== selectedType
+    ) {
+      return false;
+    }
+
+    return true;
+  });
+
+}, [
+  orders,
+  selectedDate,
+  weeklyRange,
+  reportMode,
+  selectedBranch,
+  selectedType,
+]);
 
   const totalOrders =
     filteredOrders.length;
@@ -196,64 +256,232 @@ export default function ReportsPage() {
 
       </div>
 
-      {/* FILTERS */}
+      {/* REPORT FILTERS */}
 
-      <div className="mb-8 rounded-2xl bg-white p-6 shadow">
+<div className="mb-8 rounded-2xl bg-white p-6 shadow">
 
-        <div className="grid grid-cols-3 gap-5">
+  <div className="mb-5 flex flex-wrap gap-3">
 
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={(e) =>
-              setSelectedDate(e.target.value)
-            }
-            className="rounded-lg border p-3"
-          />
+    {(["Daily", "Weekly", "Monthly"] as const).map((mode) => (
 
-          <select
-            value={selectedBranch}
-            onChange={(e) =>
-              setSelectedBranch(e.target.value)
-            }
-            className="rounded-lg border p-3"
+      <button
+  key={mode}
+  type="button"
+  onClick={() => {
+    setReportMode(mode);
+
+    if (mode === "Weekly") {
+      setWeeklyRange(undefined);
+    }
+  }}
+  className={`rounded-lg px-6 py-3 font-semibold transition ${
+    reportMode === mode
+      ? "bg-green-700 text-white"
+      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+  }`}
+>
+  {mode}
+</button>
+
+    ))}
+
+  </div>
+
+  <div className="grid grid-cols-3 gap-5">
+
+    {/* DATE / DATE RANGE */}
+
+    <div>
+
+      <label className="mb-2 block text-sm font-semibold text-gray-600">
+        {reportMode === "Daily"
+          ? "Date"
+          : reportMode === "Weekly"
+          ? "Date Range"
+          : "Month"}
+      </label>
+
+      {reportMode === "Weekly" ? (
+
+        <div className="relative">
+
+          <button
+            type="button"
+            onClick={() => {
+              const calendar =
+                document.getElementById("weekly-calendar");
+
+              calendar?.classList.toggle("hidden");
+            }}
+            className="w-full rounded-lg border bg-white p-3 text-left hover:bg-gray-50"
           >
 
-            <option>All</option>
+            {weeklyRange?.from ? (
 
-            {branches.map((branch) => (
+              <>
+                {weeklyRange.from.toLocaleDateString(
+                  "en-GB",
+                  {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  }
+                )}
 
-              <option key={branch}>
-                {branch}
-              </option>
+                {" → "}
 
-            ))}
+                {weeklyRange.to
+                  ? weeklyRange.to.toLocaleDateString(
+                      "en-GB",
+                      {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      }
+                    )
+                  : "Select end date"}
+              </>
 
-          </select>
+            ) : (
 
-          <select
-            value={selectedType}
-            onChange={(e) =>
-              setSelectedType(e.target.value)
-            }
-            className="rounded-lg border p-3"
-          >
+              <span className="text-gray-400">
+                Select date range
+              </span>
 
-            <option>All</option>
+            )}
 
-            <option>
-              Components
-            </option>
+          </button>
 
-            <option>
-              Kitchen Supplies
-            </option>
+          <div
+  id="weekly-calendar"
+  className="absolute left-0 top-full z-50 mt-2 hidden rounded-xl border bg-white p-4 shadow-xl"
+>
 
-          </select>
+            <DayPicker
+  mode="range"
+  selected={weeklyRange}
+  onSelect={(range) => {
+  const hadStartDate = !!weeklyRange?.from;
+
+  setWeeklyRange(range);
+
+  // Close ONLY after selecting the second date
+  if (hadStartDate && range?.to) {
+    document
+      .getElementById("weekly-calendar")
+      ?.classList.add("hidden");
+  }
+}}
+  numberOfMonths={2}
+  pagedNavigation
+  showOutsideDays
+/>
+
+          </div>
 
         </div>
 
-      </div>
+      ) : (
+
+        <input
+          type={
+            reportMode === "Monthly"
+              ? "month"
+              : "date"
+          }
+          value={
+            reportMode === "Monthly"
+              ? selectedDate.slice(0, 7)
+              : selectedDate
+          }
+          onChange={(e) => {
+
+            if (reportMode === "Monthly") {
+
+              setSelectedDate(
+                `${e.target.value}-01`
+              );
+
+            } else {
+
+              setSelectedDate(
+                e.target.value
+              );
+
+            }
+
+          }}
+          className="w-full rounded-lg border p-3"
+        />
+
+      )}
+
+    </div>
+
+    {/* BRANCH */}
+
+    <div>
+
+      <label className="mb-2 block text-sm font-semibold text-gray-600">
+        Branch
+      </label>
+
+      <select
+        value={selectedBranch}
+        onChange={(e) =>
+          setSelectedBranch(e.target.value)
+        }
+        className="w-full rounded-lg border p-3"
+      >
+
+        <option>All</option>
+
+        {branches.map((branch) => (
+
+          <option key={branch}>
+            {branch}
+          </option>
+
+        ))}
+
+      </select>
+
+    </div>
+
+    {/* REQUEST TYPE */}
+
+    <div>
+
+      <label className="mb-2 block text-sm font-semibold text-gray-600">
+        Request Type
+      </label>
+
+      <select
+        value={selectedType}
+        onChange={(e) =>
+          setSelectedType(e.target.value)
+        }
+        className="w-full rounded-lg border p-3"
+      >
+
+        <option>All</option>
+
+        <option>
+          Components
+        </option>
+
+        <option>
+          Kitchen Supplies
+        </option>
+
+      </select>
+
+    </div>
+
+  </div>
+
+</div>
+
 
       {/* KPI CARDS */}
 
