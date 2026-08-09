@@ -402,13 +402,17 @@ if (now > cutoff) {
 
         <div className="flex items-center justify-between">
 
-          <h2 className="text-2xl font-bold">
+          <div>
+  <h2 className="text-2xl font-bold">
+    {editMode
+      ? "Edit Order"
+      : "New Order"}
+  </h2>
 
-            {editMode
-              ? "Edit Order"
-              : "New Order"}
-
-          </h2>
+  <p className="mt-1 text-sm text-gray-500">
+    {rows.length} {rows.length === 1 ? "item" : "items"} in order
+  </p>
+</div>
 
           <button
             onClick={() =>

@@ -58,28 +58,32 @@ export default function ItemSearchModal({
 
           {items.map((item) => (
 
-            <button
-              key={item.name}
-              type="button"
-              onClick={() => addItem(item)}
-              className="block w-full border-b p-4 text-left transition hover:bg-green-50"
-            >
+  <button
+    key={item.name}
+    type="button"
+    onClick={() => addItem(item)}
+    className="flex w-full items-center justify-between border-b p-4 text-left transition hover:bg-green-50"
+  >
 
-              <div className="text-lg font-semibold">
+    <div>
 
-                {item.name}
+      <div className="text-lg font-semibold">
+        {item.name}
+      </div>
 
-              </div>
+      <div className="mt-1 text-sm text-gray-500">
+        {item.unit}
+      </div>
 
-              <div className="mt-1 text-sm text-gray-500">
+    </div>
 
-                {item.unit} • SAR {item.cost}
+    <div className="rounded-lg bg-green-100 px-4 py-2 font-semibold text-green-700">
+      Add
+    </div>
 
-              </div>
+  </button>
 
-            </button>
-
-          ))}
+))}
 
         </div>
 

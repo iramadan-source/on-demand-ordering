@@ -101,28 +101,52 @@ export default function OrderTable({
 
               <td className="p-2 text-center">
 
-                <input
-                  type="number"
-                  min={1}
-                  value={row.quantity}
-                  onChange={(e) => {
+  <div className="flex items-center justify-center gap-1">
 
-  const qty =
-    Math.max(
-      1,
-      Number(e.target.value) || 1
-    );
+    <button
+      type="button"
+      onClick={() =>
+        updateQuantity(
+          index,
+          Math.max(1, row.quantity - 1)
+        )
+      }
+      className="h-9 w-9 rounded-lg border bg-gray-100 text-lg font-bold hover:bg-gray-200"
+    >
+      −
+    </button>
 
-  updateQuantity(
-    index,
-    qty
-  );
+    <input
+      type="number"
+      min={1}
+      value={row.quantity}
+      onChange={(e) => {
+        const qty = Math.max(
+          1,
+          Number(e.target.value) || 1
+        );
 
-}}
-                  className="w-24 rounded-lg border p-2 text-center"
-                />
+        updateQuantity(index, qty);
+      }}
+      className="w-20 rounded-lg border p-2 text-center font-semibold"
+    />
 
-              </td>
+    <button
+      type="button"
+      onClick={() =>
+        updateQuantity(
+          index,
+          row.quantity + 1
+        )
+      }
+      className="h-9 w-9 rounded-lg border bg-gray-100 text-lg font-bold hover:bg-gray-200"
+    >
+      +
+    </button>
+
+  </div>
+
+</td>
 
               <td className="text-center">
 
