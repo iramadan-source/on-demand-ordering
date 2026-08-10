@@ -263,13 +263,13 @@ export default function ComponentStatsPage() {
                 Qty
               </th>
 
-              <th className="text-center">
-                Requested By
-              </th>
+              <th className="print-hide text-center">
+  Requested By
+</th>
 
-              <th className="print-hide-cost text-center">
-                Cost
-              </th>
+              <th className="print-hide text-center">
+  Cost
+</th>
 
             </tr>
 
@@ -322,7 +322,7 @@ export default function ComponentStatsPage() {
 
                     </td>
 
-                    <td className="p-3">
+                    <td className="print-hide p-3">
 
                       <div className="flex flex-wrap justify-center gap-2">
 
@@ -339,15 +339,14 @@ export default function ComponentStatsPage() {
 
                     </td>
 
-                    <td className="print-hide-cost text-center">
-                      SAR {item.cost.toFixed(2)}
-                    </td>
+                    <td className="print-hide text-center">
+  SAR {item.cost.toFixed(2)}
+</td>
 
                   </tr>
 
                   {expanded === item.name && (
-
-                    <tr>
+  <tr className="print-hide">
 
                       <td
                         colSpan={5}
@@ -398,12 +397,55 @@ export default function ComponentStatsPage() {
           </tbody>
 
         </table>
+        <div className="hidden print:block mt-8 border-t-2 border-black pt-4">
+  <div className="flex justify-between text-lg font-bold">
+    <span>Total Quantity</span>
+    <span>{totals.qty.toLocaleString()}</span>
+  </div>
+</div>
 
       </div>
             <div className="mt-6 text-sm text-gray-500">
         Click any component row to view the branch quantities.
-      </div>
+     </div>
 
-    </AppLayout>
-  );
+<style jsx global>{`
+  @media print {
+    .print-hide {
+      display: none !important;
+    }
+
+    body {
+      background: white !important;
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 12mm;
+    }
+
+    table {
+      width: 100% !important;
+      border-collapse: collapse !important;
+    }
+
+    th,
+    td {
+      color: black !important;
+      background: white !important;
+    }
+
+    .shadow {
+      box-shadow: none !important;
+    }
+
+    button,
+    input {
+      display: none !important;
+    }
+  }
+`}</style>
+
+</AppLayout>
+);
 }
