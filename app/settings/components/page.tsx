@@ -237,7 +237,7 @@ export default function ComponentsPage() {
 
                   <td className="p-4 text-right font-bold text-green-700">
                     SAR{" "}
-                    {Number(item.cost).toFixed(3)}
+                    {Number(item.cost).toFixed(4)}
                   </td>
 
                   <td className="p-4 text-center">
@@ -345,7 +345,7 @@ export default function ComponentsPage() {
 
                 <input
   type="number"
-  step="0.001"
+  step="0.0001"
   min="0"
   value={editCost}
   onChange={(e) => setEditCost(e.target.value)}
