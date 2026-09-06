@@ -15,23 +15,12 @@ type Order = {
 };
 
 function getSaudiDate() {
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone: "Asia/Riyadh",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).formatToParts(new Date());
+  const now = new Date();
+  const saudiTime = new Date(
+    now.getTime() + 3 * 60 * 60 * 1000
+  );
 
-  const year =
-    parts.find((part) => part.type === "year")?.value;
-
-  const month =
-    parts.find((part) => part.type === "month")?.value;
-
-  const day =
-    parts.find((part) => part.type === "day")?.value;
-
-  return `${year}-${month}-${day}`;
+  return saudiTime.toISOString().slice(0, 10);
 }
 
 function formatSaudiTime(date: string) {
@@ -621,14 +610,19 @@ export default function BranchStatusPage() {
 
                         <div className="font-semibold">
 
-                          {formatSaudiTime(
-                            lastOrder.created_at
-                          )}
+                          {new Date(lastOrder.created_at).toLocaleTimeString(
+  "en-GB",
+  {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Asia/Riyadh",
+  }
+)}
 
                         </div>
 
                         <div className="text-xs text-gray-500">
-  {formatSaudiDate(`${selectedDate}T00:00:00+03:00`)}
+  {selectedDate.split("-").reverse().join("/")}
 </div>
 
                       </div>

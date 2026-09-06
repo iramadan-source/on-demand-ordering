@@ -9,4 +9,7 @@ export const branches = [
   "Sulaymaniyah",
   "Jarir",
   "Malga BYO",
+  "Al-Suwaidi",
+  "Al-Arid",
+  "Kingdom Centre",
 ];
