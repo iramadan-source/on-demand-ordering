@@ -617,12 +617,8 @@ export default function BranchStatusPage() {
                         </div>
 
                         <div className="text-xs text-gray-500">
-
-                          {formatSaudiDate(
-                            lastOrder.created_at
-                          )}
-
-                        </div>
+  {formatSaudiDate(`${selectedDate}T00:00:00+03:00`)}
+</div>
 
                       </div>
 
